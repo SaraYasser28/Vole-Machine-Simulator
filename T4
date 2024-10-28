@@ -1,0 +1,158 @@
+#include <iostream>
+#include <string>
+#include <fstream>
+#include <iomanip>
+#define RED "\033[31m"
+#define RESET "\033[0m"
+
+using namespace std;
+
+class Register {
+private:
+    int memory[16];
+
+public:
+    Register() {
+        for (int i = 0; i < 16; i++) memory[i] = 0;
+    }
+
+    int getCell(int address) const {
+        if (address >= 0 && address < 16) {
+            return memory[address];
+        }
+        cerr << RED << "\n**Invalid register address**\n" << RESET;
+        return -1;
+    }
+
+    void setCell(int address, int val) {
+        if (address >= 0 && address < 16) {
+            memory[address] = val;
+        } else {
+            cerr << RED << "\n**Invalid register address**\n" << RESET;
+        }
+    }
+};
+
+class Memory {
+    string memory[256];
+    const int size = 256;
+
+public:
+    string getCell(int address) const {
+        if (address >= 0 && address < size) {
+            return memory[address];
+        }
+        cerr << RED << "\n**Invalid memory address**\n" << RESET;
+        return "";
+    }
+
+    void setCell(int address, const string &val) {
+        if (address >= 0 && address < size) {
+            memory[address] = val;
+        } else {
+            cerr << RED << "\n**Invalid memory address**\n" << RESET;
+        }
+    }
+};
+
+class CU {
+public:
+    bool executeInstruction(const string &instruction, Register &reg, Memory &mem, int &PC) {
+        char opCode = instruction[0];
+        int R = stoi(instruction.substr(1, 1), nullptr, 16);
+        int X = stoi(instruction.substr(2, 1), nullptr, 16);
+        int Y = stoi(instruction.substr(3, 1), nullptr, 16);
+        int addr = X * 16 + Y;
+
+        switch (opCode) {
+            case '1': // LOAD RXY - Load register R with contents of memory[XY]
+                reg.setCell(R, stoi(mem.getCell(addr), nullptr, 16));
+                break;
+            case '2': // LOAD RXY - Load register R with direct value XY
+                reg.setCell(R, addr);
+                break;
+            case '3': // STORE RXY - Store contents of register R to memory[XY]
+                mem.setCell(addr, to_string(reg.getCell(R)));
+                break;
+            case '4': // MOVE 0RS - Copy contents of register R to register S
+                reg.setCell(Y, reg.getCell(X));
+                break;
+            case 'B': // JUMP RXY - Jump to address XY if register R == register 0
+                if (reg.getCell(R) == reg.getCell(0)) {
+                    PC = addr;
+                }
+                break;
+            case 'C': // HALT
+                cout << "\nProgram halted...\n";
+                return false;
+            default:
+                cerr << RED << "\n**Invalid opcode**\n" << RESET;
+        }
+        return true;
+    }
+};
+
+int main() {
+    Register reg;
+    Memory mem;
+    CU control;
+    int PC = 0;
+
+    auto printState = [&]() {
+        cout << "\nCurrent Program Counter (PC): " << PC << endl;
+        cout << "\nRegister Contents:\n";
+        for (int i = 0; i < 16; i++) {
+            cout << "R" << i << ": " << reg.getCell(i) << endl;
+        }
+        cout << "\nMemory Contents (non-empty cells):\n";
+        for (int i = 0; i < 256; i++) {
+            if (mem.getCell(i) != "") {
+                cout << "M[" << i << "]: " << mem.getCell(i) << endl;
+            }
+        }
+    };
+
+    while (true) {
+        cout << "\nMenu:\nA) Load a Program from a File\nB) Enter Instructions Manually\nC) Exit";
+        cout << "\nChoose an option: ";
+        string choice;
+        cin >> choice;
+
+        if (choice == "A" || choice == "a") {
+            cout << "Enter the file name: ";
+            string fileName;
+            cin >> fileName;
+            ifstream file(fileName);
+            if (!file) {
+                cerr << RED << "Error opening file: " << fileName << RESET << endl;
+                continue;
+            }
+            string instruction;
+            while (getline(file, instruction)) {
+                cout << "Executing: " << instruction << endl;
+                if (!control.executeInstruction(instruction, reg, mem, PC)) {
+                    break;
+                }
+                printState();
+            }
+            file.close();
+        } else if (choice == "B" || choice == "b") {
+            string instruction;
+            do {
+                cout << "Enter the instruction (or 'C000' to HALT): ";
+                cin >> instruction;
+                if (!control.executeInstruction(instruction, reg, mem, PC)) {
+                    break;
+                }
+                printState();
+            } while (true);
+        } else if (choice == "C" || choice == "c") {
+            cout << "\nExiting program...\n";
+            break;
+        } else {
+            cerr << RED << "\n**Invalid choice**\n" << RESET;
+        }
+    }
+
+    return 0;
+}
