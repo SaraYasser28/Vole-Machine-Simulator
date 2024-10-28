@@ -6,76 +6,43 @@
 #define RESET "\033[0m"
 
 using namespace std;
-
 class Memory {
 private:
     int memory[256] = {};
 public:
-    void setcell(int address, int value) {
-        if (address >= 0 && address <= 256) {
-            memory[address] = value;
-
-
-        }
-        else cout << "  out of bound \n";
-    }
-    int getcell(int address) {
-        if (address >= 0 && address <= 256) {
-            
-            return memory[address];
-        }
-        else cout << "  out of bound \n";
-    }
-    
-    
-    void loadProgram(const string & filename) {
-            ifstream file(filename);
-            if (!file) {
-                cout << "Could not open file.\n" << endl;
-                return;
-            }
-            int add = 0;
-            string instructions;
-            while (file >> instructions) {
-                if (add > 256) {
-
-                    cout << "program too large the memory ";
-
-            }
-            
-            
-            }
-    
-    
-    }
-    void clearm() {
-        for (int w = 0; w < 256; w++) {
-            memory[w] = 0;
-
-        }
-    }
-};
-
-class Memory {
-    string memory[256];
-    const int size = 256;
-
-public:
-    string getCell(int address) const {
-        if (address >= 0 && address < size) {
-            return memory[address];
-        }
-        cerr << RED << "\n**Invalid memory address**\n" << RESET;
-        return "";
+   string getcell(int add) {
+    if (add >= 0 && add <= 256) {
+        
+        return memory[add];
     }
 
-    void setCell(int address, const string &value) {
-        if (address >= 0 && address < size) {
-            memory[address] = value;
-        } else {
+  void setcell(int add, int value) {
+    if (add >= 0 && add <= 256) {
+        memory[add] = value;
+}else {
             cerr << RED << "\n**Invalid memory address**\n" << RESET;
         }
     }
+void loadProgram(const string & filename) {
+        ifstream file(filename);
+        if (!file) {
+            cout << "Could not open file.\n" << endl;
+            return;
+        }
+        int add = 0;
+        string instructions;
+        while (file >> instructions) {
+            if (add > 256) {
+
+                cout << "program too large the memory ";
+        }
+        }
+}
+void clearm() {
+    for (int w = 0; w < 256; w++) {
+        memory[w] = 0;
+    }
+}
 };
 
 
