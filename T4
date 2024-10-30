@@ -10,42 +10,45 @@ class Memory {
 private:
     int memory[256] = {};
 public:
-   string getcell(int add) {
-    if (add >= 0 && add <= 256) {
-        
-        return memory[add];
-    }
+    void setCell(int add, int value) {
+        if (add >= 0 && add <= 256) {
+            memory[add] = value;
 
-  void setcell(int add, int value) {
-    if (add >= 0 && add <= 256) {
-        memory[add] = value;
-}else {
-            cerr << RED << "\n**Invalid memory address**\n" << RESET;
-        }
-    }
-void loadProgram(const string & filename) {
-        ifstream file(filename);
-        if (!file) {
-            cout << "Could not open file.\n" << endl;
-            return;
-        }
-        int add = 0;
-        string instructions;
-        while (file >> instructions) {
-            if (add > 256) {
 
-                cout << "program too large the memory ";
         }
-        }
-}
-void clearm() {
-    for (int w = 0; w < 256; w++) {
-        memory[w] = 0;
+        cerr << RED << "\n**Invalid memory address**\n" << RESET;
     }
-}
+    int getCell(int add) {
+        if (add >= 0 && add <= 256) {
+            
+            return memory[add];
+        }
+        cerr << RED << "\n**Invalid memory address**\n" << RESET;
+    }
+    
+    
+    void loadProgram(const string & filename) {
+            ifstream file(filename);
+            if (!file) {
+                cout << "Could not open file.\n" << endl;
+                return;
+            }
+            int add = 0;
+            string instructions;
+            while (file >> instructions) {
+                if (add > 256) {
+
+                    cout << "program too large the memory ";
+
+            }
+            } 
+    }
+    void clearm() {
+        for (int w = 0; w < 256; w++) {
+            memory[w] = 0;
+        }
+    }
 };
-
-
 class Register {
 private:
     int memory[16];
