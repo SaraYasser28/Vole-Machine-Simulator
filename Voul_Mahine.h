@@ -58,7 +58,6 @@ void addf(int R, int S, int T, Register& reg);
     void XOR(int R, int S, int T, Register&reg);
      float hexToFloat(const string& hex);
 std::string floatToHex(float value);
- bool is_valid(const string& hex);
 };
 class CPU {
     protected:
