@@ -27,13 +27,13 @@ class Register {
 
 class Memory {
     private:
-    int size = 256;
-    std::vector<std::string> memory;
+     int memory[256] = {};
 
     public:
     Memory();
     std::string getCell(int address) const;
     void setCell(int address, const std::string& val);
+void clearm();
 };
 
 class CU{
@@ -52,10 +52,13 @@ class ALU {
     std::string decToHex(int& dec);
     int hexToDec(const std::string& hex);
     void add(int R, int S, int T, Register&reg);
+void addf(int R, int S, int T, Register& reg);
     void OR(int R, int S, int T, Register&reg);
     void AND(int R, int S, int T, Register&reg);
     void XOR(int R, int S, int T, Register&reg);
-    
+     float hexToFloat(const string& hex);
+std::string floatToHex(float value);
+ bool is_valid(const string& hex);
 };
 class CPU {
     protected:
@@ -82,8 +85,11 @@ class Machine {
     CPU processor;
 
     public:
+Machine();
+    Machine(int iMemory[], int iRegisters[], int iPc, int iIr, const std::string& iBuffer = "");
+
     void loadFile(std::ifstream& file , int m);
-    void loadProgram(std::string s);
+     void loadProgram(const std::string& filename);
     bool isValid(const std::string& s);
     void outputState();
 
